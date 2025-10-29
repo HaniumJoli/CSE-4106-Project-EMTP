@@ -1,0 +1,3 @@
+package emtp;
+
+@license(LGPL);
