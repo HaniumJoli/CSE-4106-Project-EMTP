@@ -73,7 +73,6 @@
 		\item To extend the basic SMTP protocol with end-to-end RSA encryption at the application layer, enabling secure message transmission between clients and server.
 		\item To implement a priority-based mail delivery system with separate HIGH and LOW priority queues, demonstrating Quality of Service (QoS) differentiation in email systems.
 		\item To develop application-layer mail filtering mechanisms that validate message headers, enforce encryption policies, and reject invalid emails before queuing.
-		\item To evaluate system performance across six distinct scenarios including baseline operation, constrained resources, encryption overhead, filtering effectiveness, high load, and single client verification.
 		\item To analyze the trade-offs between priority-based scheduling and fair queuing through statistical metrics including delivery latency, queue sizes, and acceptance rates.
 	\end{itemize}
 	
@@ -115,7 +114,7 @@
 	
 	The server responds with three-digit status codes: 2xx for success, 3xx for intermediate states, 4xx for transient errors, and 5xx for permanent failures. This simple yet robust protocol has powered email communication for decades.
 	
-	\subsection{RSA Encryption Fundamentals}
+	\subsection{RSA Encryption}
 	
 	RSA (Rivest-Shamir-Adleman) is an asymmetric encryption algorithm that uses a public-private key pair. The security relies on the computational difficulty of factoring large prime numbers. Key generation involves:
 	
@@ -562,16 +561,6 @@ network EMTPNetwork {
 	
 	Each scenario can be executed independently using: \texttt{./run -u Cmdenv -c <ScenarioName>}
 	
-	\subsection{Collected Metrics}
-	
-	The simulation automatically collects comprehensive statistics through OMNeT++'s signal mechanism:
-	
-	\textbf{Client Metrics}: mailsSent (count), mailsAccepted (count), mails\-Rejected (count), rtt (vector)
-	
-	\textbf{Server Metrics}: mailsReceived, mailsDelivered, high\-Priority\-Delivered, lowPriorityDelivered, totalQueueSize (vector), high\-Priority\-Queue (vector), lowPriorityQueue (vector), delivery\-Latency (vector), highPriorityLatency (vector), low\-Priority\-Latency (vector)
-	
-	Results are automatically written to \texttt{.vec} and \texttt{.sca} files for post-simulation analysis.
-	
 	\section{Discussion}
 	
 	\subsection{Baseline vs Constrained Performance}
@@ -663,7 +652,7 @@ network EMTPNetwork {
 	
 	\section{Conclusion}
 	
-	This project successfully implemented an Enhanced Mail Transfer Protocol (EMTP) simulation in OMNeT++ that extends standard SMTP with RSA encryption, priority-based delivery, and application-layer filtering. All six test scenarios validated the core objectives including complete SMTP command flow, successful encryption/decryption, and robust content validation. The constrained scenario demonstrated that strict priority scheduling achieves 75-80\% latency reduction for HIGH priority mails under resource limitations, while encryption overhead analysis showed a moderate 10-15\% increase in end-to-end latency. Filtering tests confirmed 100\% rejection of invalid mails, and the high load scenario verified system stability with 20 concurrent clients. The simulation demonstrates understanding of SMTP protocol mechanics, RSA encryption principles, priority queue management, and application-layer security policy enforcement, with modular architecture enabling future extensions.
+	This project successfully implemented an Enhanced Mail Transfer Protocol (EMTP) simulation in OMNeT++ that extends standard SMTP with RSA encryption, priority-based delivery, and application-layer filtering. All six test scenarios validated the core objectives including complete SMTP command flow, successful encryption/decryption, and robust content validation. The constrained scenario demonstrated that strict priority scheduling achieves 75-80\% latency reduction for HIGH priority mails under resource limitations, while encryption overhead analysis showed a moderate 10-15\% increase in end-to-end latency. Filtering tests confirmed 100\% rejection of invalid mails, and the high load scenario verified system stability with 20 concurrent clients.
 	
 	\begin{thebibliography}{99}
 		\addcontentsline{toc}{section}{Bibliography}
@@ -684,13 +673,6 @@ network EMTPNetwork {
 		
 		\bibitem{network-security}
 		Stallings, W. (2017). \textit{Cryptography and Network Security: Principles and Practice} (7th ed.). Pearson Education.
-		
-		\bibitem{qos-mechanisms}
-		Xiao, X., \& Ni, L. M. (1999). \textit{Internet QoS: A Big Picture}. IEEE Network, 13(2), 8-18.
-		
-		\bibitem{smtp-evolution}
-		Crocker, D. (2009). \textit{Email History}. Living Internet. \\
-		\texttt{https://livinginternet.com/e/ei.htm}
 		
 		\bibitem{discrete-event-sim}
 		Banks, J., Carson, J. S., Nelson, B. L., \& Nicol, D. M. (2010). \textit{Discrete-Event System Simulation} (5th ed.). Prentice Hall.
