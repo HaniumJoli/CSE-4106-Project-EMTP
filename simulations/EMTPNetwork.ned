@@ -6,9 +6,6 @@ package emtp.simulations;
 import emtp.ClientModule;
 import emtp.ServerModule;
 
-//
-// Simple channel with propagation delay
-//
 channel Channel extends ned.DatarateChannel
 {
     parameters:
@@ -18,9 +15,6 @@ channel Channel extends ned.DatarateChannel
         @display("ls=blue,3");
 }
 
-//
-// EMTP Network with one client and one server
-//
 network EMTPNetwork
 {
     parameters:

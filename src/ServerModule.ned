@@ -4,26 +4,21 @@ simple ServerModule
 {
     parameters:
         @display("i=device/server2;i2=status/execute");
-        
-        // Server configuration
+
         string serverName = default("mail.server.com");
-        
-        // Queue processing parameters
-        double processingDelay @unit(s) = default(0.1s);  // Time to process one mail
-        double deliveryRate @unit(s) = default(1s);  // How often to deliver mails from queue
-        
-        // Capacity constraints
-        int maxQueueSize = default(100);  // Maximum combined queue size
-        bool constrainedMode = default(false);  // Enable constrained/bandwidth-limited mode
-        
-        // Filtering rules
+
+        double processingDelay @unit(s) = default(0.1s);
+        double deliveryRate @unit(s) = default(1s);
+
+        int maxQueueSize = default(100);
+        bool constrainedMode = default(false);
+
         bool enableFiltering = default(true);
         bool requireSubject = default(true);
         bool requireEncryption = default(false);
-        
-        // Encryption
-        int encryptionSeed = default(12345);  // Seed for key generation
-        
+
+        int encryptionSeed = default(12345);
+
         // Statistics
         @signal[mailReceived](type=long);
         @signal[mailAccepted](type=long);
@@ -37,7 +32,7 @@ simple ServerModule
         @signal[deliveryLatency](type=simtime_t);
         @signal[highPriorityLatency](type=simtime_t);
         @signal[lowPriorityLatency](type=simtime_t);
-        
+
         @statistic[mailsReceived](title="Mails Received"; source=mailReceived; record=count,sum);
         @statistic[mailsAccepted](title="Mails Accepted"; source=mailAccepted; record=count,sum);
         @statistic[mailsRejected](title="Mails Rejected"; source=mailRejected; record=count,sum);
@@ -50,7 +45,7 @@ simple ServerModule
         @statistic[deliveryLatency](title="Delivery Latency"; source=deliveryLatency; record=vector,mean,max; unit=s);
         @statistic[highPriorityLatency](title="High Priority Latency"; source=highPriorityLatency; record=vector,mean,max; unit=s);
         @statistic[lowPriorityLatency](title="Low Priority Latency"; source=lowPriorityLatency; record=vector,mean,max; unit=s);
-        
+
     gates:
         inout port[];
 }

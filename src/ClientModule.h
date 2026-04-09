@@ -7,14 +7,9 @@
 
 using namespace omnetpp;
 
-/**
- * SMTP Client Module
- * Implements the client side of EMTP protocol with encryption and priority support
- */
 class ClientModule : public cSimpleModule
 {
 private:
-    // Client state
     enum ClientState
     {
         IDLE,

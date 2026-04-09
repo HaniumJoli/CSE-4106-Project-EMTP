@@ -94,3 +94,4 @@ __pycache__/
 *.lof
 *.lot
 *.gz
+/.metadata/

@@ -13,7 +13,6 @@ ServerModule::~ServerModule()
 {
     cancelAndDelete(deliveryTimer);
 
-    // Clean up queues
     for (auto mail : highPriorityQueue)
     {
         delete mail;
@@ -26,7 +25,6 @@ ServerModule::~ServerModule()
 
 void ServerModule::initialize()
 {
-    // Read parameters
     serverName = par("serverName").stdstringValue();
     processingDelay = par("processingDelay");
     deliveryRate = par("deliveryRate");
@@ -36,13 +34,11 @@ void ServerModule::initialize()
     requireSubject = par("requireSubject");
     requireEncryption = par("requireEncryption");
 
-    // Initialize encryption
     int seed = par("encryptionSeed");
     encryptionHelper.generateKeyPair(seed);
 
     EV << "Server public key: " << encryptionHelper.getPublicKeyString() << endl;
 
-    // Initialize signals
     mailReceivedSignal = registerSignal("mailReceived");
     mailAcceptedSignal = registerSignal("mailAccepted");
     mailRejectedSignal = registerSignal("mailRejected");
@@ -56,7 +52,6 @@ void ServerModule::initialize()
     highPriorityLatencySignal = registerSignal("highPriorityLatency");
     lowPriorityLatencySignal = registerSignal("lowPriorityLatency");
 
-    // Start delivery timer
     deliveryTimer = new cMessage("deliveryTimer");
     scheduleAt(simTime() + deliveryRate, deliveryTimer);
 
@@ -68,16 +63,13 @@ void ServerModule::handleMessage(cMessage *msg)
 {
     if (msg == deliveryTimer)
     {
-        // Process delivery queue
         processDeliveryQueue();
         scheduleAt(simTime() + deliveryRate, deliveryTimer);
     }
     else if (SMTPCommand *cmd = dynamic_cast<SMTPCommand *>(msg))
     {
-        // Track which client gate this message came from
         currentClientGateIndex = msg->getArrivalGate()->getIndex();
 
-        // Handle SMTP command
         switch (cmd->getCommandType())
         {
         case CMD_HELO:
@@ -100,10 +92,8 @@ void ServerModule::handleMessage(cMessage *msg)
     }
     else if (MailData *mailData = dynamic_cast<MailData *>(msg))
     {
-        // Track which client gate this message came from
         currentClientGateIndex = msg->getArrivalGate()->getIndex();
 
-        // Handle mail data
         handleDataCommand(mailData);
         delete msg;
     }
@@ -160,7 +150,6 @@ void ServerModule::handleDataCommand(MailData *mailData)
     queuedMail->setArrivalTime(simTime());
     queuedMail->setMailId(nextMailId++);
 
-    // Decrypt body if encrypted
     if (mailData->isEncrypted())
     {
         std::string decrypted = encryptionHelper.decrypt(mailData->getEncryptedBody());
@@ -181,7 +170,6 @@ void ServerModule::handleDataCommand(MailData *mailData)
         queuedMail->setDecryptedBody(mailData->getEncryptedBody());
     }
 
-    // Apply filtering
     std::string rejectReason;
     if (enableFiltering && !filterMail(queuedMail, rejectReason))
     {
@@ -193,7 +181,6 @@ void ServerModule::handleDataCommand(MailData *mailData)
         return;
     }
 
-    // Check queue capacity
     int totalQueueSize = highPriorityQueue.size() + lowPriorityQueue.size();
     if (totalQueueSize >= maxQueueSize)
     {
@@ -205,7 +192,6 @@ void ServerModule::handleDataCommand(MailData *mailData)
         return;
     }
 
-    // Enqueue mail
     enqueueMail(queuedMail);
     emit(mailAcceptedSignal, 1L);
 
@@ -227,21 +213,18 @@ void ServerModule::handleQuitCommand(SMTPCommand *cmd)
 
 bool ServerModule::filterMail(QueuedMail *mail, std::string &rejectReason)
 {
-    // Check if subject is required
     if (requireSubject && strlen(mail->getSubject()) == 0)
     {
         rejectReason = "Subject header required";
         return false;
     }
 
-    // Check if body is empty
     if (strlen(mail->getDecryptedBody()) == 0)
     {
         rejectReason = "Empty message body";
         return false;
     }
 
-    // Check priority header validity
     if (mail->getPriority() != PRIORITY_HIGH && mail->getPriority() != PRIORITY_LOW)
     {
         rejectReason = "Invalid priority header";
@@ -347,7 +330,6 @@ void ServerModule::sendResponse(int responseCode, const char *message, const cha
 
     response->setSequenceNumber(++clientSequenceNumber);
 
-    // Set color based on response code
     if (responseCode == RESP_250_OK || responseCode == RESP_220_READY ||
         responseCode == RESP_354_START_INPUT || responseCode == RESP_221_BYE)
     {
@@ -360,7 +342,6 @@ void ServerModule::sendResponse(int responseCode, const char *message, const cha
         response->addPar("label") = "ERROR";
     }
 
-    // Send to the gate from which the last message was received
     if (currentClientGateIndex >= 0)
     {
         send(response, "port$o", currentClientGateIndex);

@@ -12,7 +12,6 @@ ClientModule::~ClientModule()
 
 void ClientModule::initialize()
 {
-    // Read parameters
     clientName = par("clientName").stdstringValue();
     mailFrom = par("mailFrom").stdstringValue();
     mailTo = par("mailTo").stdstringValue();
@@ -22,13 +21,11 @@ void ClientModule::initialize()
     useEncryption = par("useEncryption").boolValue();
     startTime = par("startTime");
 
-    // Initialize signals
     mailSentSignal = registerSignal("mailSent");
     mailAcceptedSignal = registerSignal("mailAccepted");
     mailRejectedSignal = registerSignal("mailRejected");
     roundTripTimeSignal = registerSignal("roundTripTime");
 
-    // Schedule start
     cMessage *startMsg = new cMessage("start");
     scheduleAt(startTime, startMsg);
 
